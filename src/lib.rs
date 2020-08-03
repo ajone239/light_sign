@@ -6,7 +6,7 @@
 use std::thread;
 use std::sync::{mpsc, Arc, Mutex,};
 
-/// Warps upt the needed traits into one type.
+/// Wraps upt the needed traits into one type.
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
 /// Allows us more verbage with the workes
@@ -105,6 +105,6 @@ impl Worker {
             }
         });
 
-        Worker { id, thread: Some(thread) }
+        Worker { id: id, thread: Some(thread) }
     }
 }

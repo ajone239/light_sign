@@ -1,9 +1,7 @@
-use std::fs;
-use std::thread;
+use std::{fs, thread};
 use std::time::Duration;
 use std::io::prelude::*;
-use std::net::TcpListener;
-use std::net::TcpStream;
+use std::net::{TcpListener, TcpStream};
 
 use tut_final::ThreadPool;
 
