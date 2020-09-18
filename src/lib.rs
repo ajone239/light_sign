@@ -21,6 +21,7 @@ enum Message {
 /// The constructor returns the result.
 /// Can be initialized with the include constructer:
 /// ```
+/// use tut_final::ThreadPool;
 /// let pool = match ThreadPool::new(4) {
 ///     Ok(t) => t,
 ///     Err(_) => panic!("It's too big"),
