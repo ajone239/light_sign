@@ -1,3 +1,4 @@
+use std::env;
 use std::fs;
 use std::thread;
 use std::time::Duration;
@@ -8,12 +9,23 @@ use std::net::TcpStream;
 use tut_final::ThreadPool;
 
 fn main() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-
-    let pool = match ThreadPool::new(4) {
-        Ok(t) => t,
-        Err(_) => panic!("It's too big"),
+    let args : Vec<String> = env::args().collect();
+    
+    let ip_str = if args.len() > 1 {
+        format!("{}:7878", args[1])
+    } else {
+        String::from("127.0.0.1:7878")
     };
+
+    let listener = match TcpListener::bind(&ip_str) {
+        Ok(listen) => { 
+            println!("Bound at -> {}", &ip_str);
+            listen
+        },
+        Err(_) => panic!("No Socket Bound"),
+    };
+
+    let pool = ThreadPool::new(4).unwrap();
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
