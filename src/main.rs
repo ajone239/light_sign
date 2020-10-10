@@ -10,7 +10,7 @@ use tut_final::ThreadPool;
 
 fn main() {
     let args : Vec<String> = env::args().collect();
-    
+
     let ip_str = if args.len() > 1 {
         format!("{}:7878", args[1])
     } else {
@@ -18,7 +18,7 @@ fn main() {
     };
 
     let listener = match TcpListener::bind(&ip_str) {
-        Ok(listen) => { 
+        Ok(listen) => {
             println!("Bound at -> {}", &ip_str);
             listen
         },
@@ -42,11 +42,15 @@ fn handle_connection(mut stream: TcpStream) {
 
     let get = b"GET / HTTP/1.1\r\n";
     let sleep = b"GET /sleep HTTP/1.1\r\n";
+    let fun = b"GET /fun HTTP/1.1\r\n";
 
     let (status_line, filename) = if buffer.starts_with(get) {
         ("HTTP/1.1 200 OK\r\n\r\n", "hello.html")
     } else if buffer.starts_with(sleep) {
         thread::sleep(Duration::from_secs(10));
+        ("HTTP/1.1 200 OK\r\n\r\n", "hello.html")
+    } else if buffer.starts_with(fun) {
+        println!("Called a new thing");
         ("HTTP/1.1 200 OK\r\n\r\n", "hello.html")
     } else {
         ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "404.html")
