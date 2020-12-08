@@ -3,8 +3,8 @@
 //! The thread pool described within the tutorial for the web server.
 //! It pretty cool
 
+use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
-use std::sync::{mpsc, Arc, Mutex,};
 
 /// Wraps upt the needed traits into one type.
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -41,7 +41,6 @@ impl ThreadPool {
     ///
     /// The new function panics with a zero size.
     pub fn new(size: usize) -> Result<ThreadPool, &'static str> {
-
         if size > 100 {
             return Err("Too big");
         }
@@ -53,18 +52,18 @@ impl ThreadPool {
         let mut workers = Vec::with_capacity(size);
 
         // make all the theads
-        for id in 0..size{
+        for id in 0..size {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        Ok(ThreadPool{ workers, sender })
-
+        Ok(ThreadPool { workers, sender })
     }
     /// Send work to a thread pool
     ///
     /// Send a message to all workers telling them to die.
     pub fn execute<F>(&self, f: F)
-        where F: FnOnce() + Send + 'static,
+    where
+        F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
         self.sender.send(Message::NewJob(job)).unwrap();
@@ -96,16 +95,22 @@ struct Worker {
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) -> Worker {
-        let thread = thread::spawn(move ||  loop {
-            let message: Message = receiver.lock().unwrap() // lock the channel mutex
-                .recv().unwrap(); // get the job from the channel
+        let thread = thread::spawn(move || loop {
+            let message: Message = receiver
+                .lock()
+                .unwrap() // lock the channel mutex
+                .recv()
+                .unwrap(); // get the job from the channel
 
             match message {
                 Message::NewJob(job) => job(),
-                Message::Terminate  => break,
+                Message::Terminate => break,
             }
         });
 
-        Worker { id: id, thread: Some(thread) }
+        Worker {
+            id: id,
+            thread: Some(thread),
+        }
     }
 }

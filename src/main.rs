@@ -1,11 +1,11 @@
-use std::{env, fs, str};
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+use std::{env, fs, str};
 
 use tut_final::ThreadPool;
 
 fn main() {
-    let args : Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().collect();
 
     let ip_str = if args.len() > 1 {
         format!("{}:8080", args[1])
@@ -17,7 +17,7 @@ fn main() {
         Ok(listen) => {
             println!("Bound at -> http://{}", &ip_str);
             listen
-        },
+        }
         Err(_) => panic!("No Socket Bound"),
     };
 
@@ -42,10 +42,25 @@ fn handle_connection(mut stream: TcpStream) {
     let (status_line, filename) = if buffer.starts_with(get) {
         ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
     } else if buffer.starts_with(data) {
-        let lines = str::from_utf8(&buffer).unwrap().lines();
-        for line in lines {
-            println!("{}", line);
+
+        let line = str::from_utf8(&buffer).unwrap().lines().next().unwrap();
+        let line = line.split_at(6).1;
+        let line = line.split_at(line.rfind(" ").unwrap()).0;
+
+        for obj in line.split('&') {
+            let tmp = obj.split_at(obj.find("=").unwrap() + 1);
+            match tmp.0 {
+                "type=" => {
+                    println!("Type: {}", tmp.1);
+                    if tmp.1 != "other" {
+                        break;
+                    }
+                },
+                "opt_cont=" => println!("Cont: {}", tmp.1.replace("+", " ")),
+                _ => println!("Nope"),
+            }
         }
+
         ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
     } else {
         ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "./html/404.html")
