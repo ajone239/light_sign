@@ -7,13 +7,18 @@
   <body>
     <h1>Hello!</h1>
     <p>Hi from Rust</p>
-    <form action="/action_page.php" method="get">
-      <label for="fname">First name:</label>
-      <input type="text" id="fname" name="fname"><br><br>
-      <label for="lname">Last name:</label>
-      <input type="text" id="lname" name="lname"><br><br>
+    <form method="get">
+      <input type="radio" id="work" name="type" value="work">
+      <label for="work">Work</label><br>
+      <input type="radio" id="school" name="type" value="school">
+      <label for="school">School</label><br>
+      <input type="radio" id="donotdisturb" name="type" value="donotdisturb">
+      <label for="donotdisturb">Do Not Disturb</label><br>
+      <input type="radio" id="other" name="type" value="other">
+      <label for="other">Other</label><br>
+      <label for="opt_cont">Other Content:</label><br>
+      <input type="text" id="opt_cont" name="opt_cont"><br><br>
       <button type="submit">Submit</button>
-      <button type="submit" formmethod="post">Submit using POST</button>
     </form>
   </body>
 </html>

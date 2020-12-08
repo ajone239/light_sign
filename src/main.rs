@@ -1,11 +1,6 @@
-use std::env;
-use std::fs;
-use std::thread;
-use std::str;
-use std::time::Duration;
+use std::{env, fs, str};
 use std::io::prelude::*;
-use std::net::TcpListener;
-use std::net::TcpStream;
+use std::net::{TcpListener, TcpStream};
 
 use tut_final::ThreadPool;
 
@@ -13,14 +8,14 @@ fn main() {
     let args : Vec<String> = env::args().collect();
 
     let ip_str = if args.len() > 1 {
-        format!("{}:7878", args[1])
+        format!("{}:8080", args[1])
     } else {
-        String::from("127.0.0.1:7878")
+        String::from("localhost:8080")
     };
 
     let listener = match TcpListener::bind(&ip_str) {
         Ok(listen) => {
-            println!("Bound at -> {}", &ip_str);
+            println!("Bound at -> http://{}", &ip_str);
             listen
         },
         Err(_) => panic!("No Socket Bound"),
@@ -37,22 +32,23 @@ fn main() {
     }
 }
 
-fn handle_connection(mut stream: TcpStream) -> u32 {
+fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
 
     let get = b"GET / HTTP/1.1\r\n";
-    let sleep = b"GET /sleep HTTP/1.1\r\n";
-
-    print!("{}", str::from_utf8(&buffer).unwrap());
+    let data = b"GET /?";
 
     let (status_line, filename) = if buffer.starts_with(get) {
-        ("HTTP/1.1 200 OK\r\n\r\n", "html/hello.html")
-    } else if buffer.starts_with(sleep) {
-        thread::sleep(Duration::from_secs(10));
-        ("HTTP/1.1 200 OK\r\n\r\n", "html/hello.html")
+        ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
+    } else if buffer.starts_with(data) {
+        let lines = str::from_utf8(&buffer).unwrap().lines();
+        for line in lines {
+            println!("{}", line);
+        }
+        ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
     } else {
-        ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "html/404.html")
+        ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "./html/404.html")
     };
 
     let contents = fs::read_to_string(filename).unwrap();
@@ -61,6 +57,4 @@ fn handle_connection(mut stream: TcpStream) -> u32 {
 
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
-
-    return 69;
 }
