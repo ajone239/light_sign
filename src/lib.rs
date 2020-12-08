@@ -97,7 +97,7 @@ struct Worker {
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) -> Worker {
         let thread = thread::spawn(move ||  loop {
-            let message :Message = receiver.lock().unwrap() // lock the channel mutex
+            let message: Message = receiver.lock().unwrap() // lock the channel mutex
                 .recv().unwrap(); // get the job from the channel
 
             match message {
