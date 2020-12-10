@@ -3,8 +3,8 @@
 //! The thread pool described within the tutorial for the web server.
 //! It pretty cool
 
-use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
+use std::sync::{mpsc, Arc, Mutex};
 
 /// Wraps upt the needed traits into one type.
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -71,7 +71,7 @@ impl ThreadPool {
 }
 
 impl Drop for ThreadPool {
-    /// Destroys a threadpopl
+    /// #Destroys a threadpopl
     ///
     /// Send a message to all workers telling them to die.
     fn drop(&mut self) {
