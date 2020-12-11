@@ -43,10 +43,13 @@ fn handle_connection(mut stream: TcpStream) {
         ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
     } else if buffer.starts_with(data) {
 
+        // take first line
         let line = str::from_utf8(&buffer).unwrap().lines().next().unwrap();
+        // extract request
         let line = line.split_at(6).1;
         let line = line.split_at(line.rfind(" ").unwrap()).0;
 
+        // parse the content
         for obj in line.split('&') {
             let tmp = obj.split_at(obj.find("=").unwrap() + 1);
             match tmp.0 {
