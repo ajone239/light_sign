@@ -4,13 +4,15 @@ use std::{env, fs, str};
 
 use light_sign::ThreadPool;
 
+const PORT: i32 = 9999;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     let ip_str = if args.len() > 1 {
-        format!("{}:8080", args[1])
+        format!("{}:{}", args[1], PORT)
     } else {
-        String::from("localhost:8080")
+        format!("{}:{}", "localhost", PORT)
     };
 
     let listener = match TcpListener::bind(&ip_str) {
