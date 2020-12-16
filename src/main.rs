@@ -4,7 +4,7 @@ use std::{env, fs, str};
 
 use light_sign::ThreadPool;
 
-const PORT: i32 = 9999
+const PORT: i32 = 9999;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
