@@ -6,7 +6,7 @@ use light_sign::ThreadPool;
 
 const PORT: i32 = 9999;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
 
     let ip_str = if args.len() > 1 {
@@ -15,15 +15,10 @@ fn main() {
         format!("{}:{}", "localhost", PORT)
     };
 
-    let listener = match TcpListener::bind(&ip_str) {
-        Ok(listen) => {
-            println!("Bound at -> http://{}", &ip_str);
-            listen
-        }
-        Err(_) => panic!("No Socket Bound"),
-    };
+    let listener = TcpListener::bind(&ip_str)?;
+    println!("Bound at -> http://{}", &ip_str);
 
-    let pool = ThreadPool::new(4).unwrap();
+    let pool = ThreadPool::new(4);
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
@@ -32,9 +27,12 @@ fn main() {
             handle_connection(stream);
         });
     }
+
+    return Ok(());
 }
 
 fn handle_connection(mut stream: TcpStream) {
+
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
 

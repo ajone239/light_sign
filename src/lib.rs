@@ -40,10 +40,7 @@ impl ThreadPool {
     /// # Panics
     ///
     /// The new function panics with a zero size.
-    pub fn new(size: usize) -> Result<ThreadPool, &'static str> {
-        if size > 100 {
-            return Err("Too big");
-        }
+    pub fn new(size: usize) -> ThreadPool {
 
         let (sender, receiver) = mpsc::channel();
 
@@ -56,7 +53,7 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        Ok(ThreadPool { workers, sender })
+        ThreadPool { workers, sender }
     }
     /// Send work to a thread pool
     ///
@@ -71,7 +68,7 @@ impl ThreadPool {
 }
 
 impl Drop for ThreadPool {
-    /// #Destroys a threadpopl
+    /// # Destroys a threadpopl
     ///
     /// Send a message to all workers telling them to die.
     fn drop(&mut self) {
