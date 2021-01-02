@@ -1,8 +1,10 @@
+mod thread_pool;
+
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::{env, fs, str};
 
-use light_sign::ThreadPool;
+use crate::thread_pool::ThreadPool;
 
 const PORT: i32 = 9999;
 
@@ -64,7 +66,7 @@ fn handle_connection(mut stream: TcpStream) {
             }
         }
 
-        ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
+        ("HTTP/1.1 200 OK\r\n\r\n", "./html/success.html")
     } else {
         ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "./html/404.html")
     };
