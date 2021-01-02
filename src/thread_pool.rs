@@ -3,6 +3,8 @@
 //! The thread pool described within the tutorial for the web server.
 //! It pretty cool
 
+#![allow(dead_code)]
+
 use std::thread;
 use std::sync::{mpsc, Arc, Mutex};
 
