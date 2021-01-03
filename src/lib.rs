@@ -2,15 +2,23 @@ pub mod thread_pool;
 
 use std::io::prelude::*;
 use std::net::TcpStream;
+use std::sync::{Arc, Mutex};
 use std::{fs, str};
 
-pub fn handle_connection(mut stream: TcpStream) {
-
+pub fn handle_connection(mut stream: TcpStream, str_arc: Arc<Mutex<i32>>) {
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
 
     let get = b"GET / HTTP/1.1\r\n";
     let data = b"GET /?";
+
+    {
+        let mut shared = str_arc.lock().unwrap();
+
+        *shared += 1;
+
+        println!("The shared value is now {:?}", shared);
+    }
 
     let (status_line, filename) = if buffer.starts_with(get) {
         ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
@@ -46,7 +54,7 @@ fn parse_data_request(buffer: &[u8]) {
                     println!("Type_str: {}", req_type_to_str(tmp.1));
                     break;
                 }
-            },
+            }
             "opt_cont=" => println!("Cont: {}", tmp.1.replace("+", " ")),
             _ => println!("Nope"),
         }
@@ -55,10 +63,10 @@ fn parse_data_request(buffer: &[u8]) {
 
 fn req_type_to_str(type_str: &str) -> &str {
     match type_str {
-      "comein"	        => "Come In",
-      "work"	        => "Work",
-      "school"	        => "School",
-      "donotdisturb"	=> "Do Not Disturb",
-      _                 => "Invalid",
+        "comein" => "Come In",
+        "work" => "Work",
+        "school" => "School",
+        "donotdisturb" => "Do Not Disturb",
+        _ => "Invalid",
     }
 }

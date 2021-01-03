@@ -5,8 +5,8 @@
 
 #![allow(dead_code)]
 
-use std::thread;
 use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
 
 /// Wraps upt the needed traits into one type.
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -45,7 +45,6 @@ impl ThreadPool {
     ///
     /// The new function panics with a zero size.
     pub fn new(size: usize) -> ThreadPool {
-
         let (sender, receiver) = mpsc::channel();
 
         let receiver = Arc::new(Mutex::new(receiver));
