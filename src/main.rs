@@ -3,13 +3,17 @@ use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
 
 use light_sign::thread_pool::ThreadPool;
+use rppal::uart::{Parity, Uart};
 
 const PORT: i32 = 9999;
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
     // will be used mutably?
-    let int_ref = Arc::new(Mutex::new(0));
+    let mut uart = Uart::new(9600, Parity::None, 8, 1).unwrap();
+    uart.set_write_mode(true).unwrap();
+
+    let int_ref = Arc::new(Mutex::new(uart));
 
     let ip_str = if args.len() > 1 {
         format!("{}:{}", args[1], PORT)
