@@ -1,3 +1,13 @@
+/******************************************************************************/
+/* Name: Austin Jones (ajone239)                                              */
+/* Project: light_sign                                                        */
+/* File: led_matrix_test.ino                                                  */
+/*                                                                            */
+/* Purpose: The code is to recieve strings over serial. These strings are then*/
+/* displayed on a led sign. The display is achieved with the NeoMatix Library.*/
+/*                                                                            */
+/******************************************************************************/
+
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
@@ -37,37 +47,50 @@ const uint16_t colors[] = {
 
 int x = matrix.width();
 int pass = 0;
-String msg = "Austin Jones";
+String msg = "Austin Jones"; // Init str
 int word_width = -36;
 
 void setup() {
+
   Serial.begin(9600); // opens serial port,
   matrix.begin();
+
   matrix.setTextWrap(false);
   matrix.setBrightness(40);
   matrix.setTextColor(colors[0]);
 }
 
 void loop() {
+
+  // Only read if there is data
   if (Serial.available()) {
-    String tmp_msg = Serial.readString(); // read the incoming data as string
+    String tmp_msg = Serial.readString();
+    // check for valid string
     if (tmp_msg.length() != 0) {
       msg = tmp_msg;
       Serial.println(msg);
+      // calculate the word width for the code to display all your text
       word_width = -((msg.length() - 4) * 6);
       x = matrix.width();
     }
   }
-  
+
+  // Render this round on the matrix
   matrix.fillScreen(0);
   matrix.setCursor(x, 0);
   matrix.print(msg.c_str());
+
+  // Move the x position and check if done with one display
   if(--x < word_width) {
+    // Reset poss
     x = matrix.width();
+    // change colour
     if(++pass >= 3) pass = 0;
     matrix.setTextColor(colors[pass]);
 
   }
+
+  // Display
   matrix.show();
   delay(100);
 }

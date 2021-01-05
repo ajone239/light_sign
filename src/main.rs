@@ -1,3 +1,15 @@
+/*
+ * Name: Austin Jones
+ * Project: Light Sign
+ * File: src/main.rs
+ *
+ * Purpose:
+ *  Define the main execution of this project. Within the main function
+ * the args are parsed. A TcpListener is created and bound to listen for
+ * incoming streams. The incoming streams are pushed to a thread pool to be
+ * handled.
+ */
+
 use std::env;
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
