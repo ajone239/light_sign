@@ -1,6 +1,9 @@
 Light Sign
 ==========
-This is my first real project please be nice
+During the COVID times, I have been relegated to turning my room in my apartment into an office.
+This sign was designed to deter roomates from knocking on my door when I am working.
+This was written in Rust, a language for which I have very little experience and alot of love.
+Hope, you like it.
 
 Overview
 --------
