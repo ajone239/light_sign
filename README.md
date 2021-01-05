@@ -34,6 +34,7 @@ This will have to be diffused as it is super bright.
 - [5V 5A PSU](https://www.amazon.com/gp/product/B078RT3ZPS)
 This gives us power.
 Make sure you have enough.
+And also not too much.
 
 Install
 -------
