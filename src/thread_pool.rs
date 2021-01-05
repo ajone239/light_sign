@@ -1,7 +1,7 @@
 //! # Thread pool from the Tutorial
 //!
 //! The thread pool described within the tutorial for the web server.
-//! It pretty cool
+//! For it's use here is has remained largely unchanged from what I wrote.
 
 #![allow(dead_code)]
 
@@ -13,7 +13,9 @@ type Job = Box<dyn FnOnce() + Send + 'static>;
 
 /// Allows us more verbage with the workes
 enum Message {
+    /// Contains work for a thread to run
     NewJob(Job),
+    /// Signals all the threads to stop working and shut down
     Terminate,
 }
 
@@ -26,10 +28,8 @@ enum Message {
 /// mod thread_pool;
 ///
 /// use crate::thread_pool::ThreadPool;
-/// let pool = match ThreadPool::new(4) {
-///     Ok(t) => t,
-///     Err(_) => panic!("It's too big"),
-/// };
+/// let pool = ThreadPool::new(4);
+///
 /// ```
 pub struct ThreadPool {
     workers: Vec<Worker>,
@@ -37,13 +37,13 @@ pub struct ThreadPool {
 }
 
 impl ThreadPool {
-    /// Create a new ThreadPool
-    ///
+    /// Create a new ThreadPool.
     /// The size is the nube of threads in the pool.
     ///
-    /// # Panics
-    ///
-    /// The new function panics with a zero size.
+    /// # Examples
+    /// ```
+    /// let pool = ThreadPool::new(THREAD_COUNT);
+    /// ```
     pub fn new(size: usize) -> ThreadPool {
         let (sender, receiver) = mpsc::channel();
 
@@ -58,9 +58,25 @@ impl ThreadPool {
 
         ThreadPool { workers, sender }
     }
-    /// Send work to a thread pool
+    /// Sends work to a thread pool.
+    /// f must be of the type *F: FnOnce() + Send + 'static*.
     ///
-    /// Send a message to all workers telling them to die.
+    /// # Examples
+    /// ```
+    /// let pool = ThreadPool::new(THREAD_COUNT);
+    /// let int_ref = Arc::new(Mutex::new(0));
+    ///
+    /// for i in 0..5 {
+    ///     let ref_clone = Arc::clone(&int_ref);
+    ///     pool.execute(|| {
+    ///         let shared = ref_clone.lock().unwrap();
+    ///         shared += 1;
+    ///     });
+    /// }
+    /// ```
+    ///
+    /// # Panics
+    /// If the mpsc channel send fails.
     pub fn execute<F>(&self, f: F)
     where
         F: FnOnce() + Send + 'static,
@@ -71,8 +87,7 @@ impl ThreadPool {
 }
 
 impl Drop for ThreadPool {
-    /// # Destroys a threadpopl
-    ///
+    /// Destroys a threadpopl.
     /// Send a message to all workers telling them to die.
     fn drop(&mut self) {
         for _ in &mut self.workers {
@@ -88,6 +103,8 @@ impl Drop for ThreadPool {
     }
 }
 
+// Helper Struct
+// Holds a thread and an id for tracking
 struct Worker {
     id: usize,
     thread: Option<thread::JoinHandle<()>>,
