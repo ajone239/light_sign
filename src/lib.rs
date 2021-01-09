@@ -30,7 +30,7 @@ pub fn handle_connection(mut stream: TcpStream, str_arc: Arc<Mutex<Uart>>) {
 
     let (status_line, filename) = if buffer.starts_with(get) {
         ("HTTP/1.1 200 OK\r\n\r\n", "./html/hello.html")
-    } else if buffer.starts_with(query ) {
+    } else if buffer.starts_with(query) {
         let mut response_path = "./html/failure.html";
 
         // Attempt to parse the string

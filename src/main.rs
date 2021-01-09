@@ -43,7 +43,6 @@ fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind(&ip_str)?;
     println!("Bound at -> http://{}", &ip_str);
 
-
     // Get a thread pool to handle incoming connections
     let pool = ThreadPool::new(THREAD_COUNT);
 
