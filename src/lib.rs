@@ -31,10 +31,10 @@ pub fn handle_connection(mut stream: TcpStream, str_arc: Arc<Mutex<Uart>>) {
     let (status_line, filename) = if buffer.starts_with(get) {
         (
             "HTTP/1.1 200 OK\r\n\r\n",
-            "home/pi/Rust/cross_bins/html/hello.html",
+            "/home/pi/Rust/cross_bins/html/hello.html",
         )
     } else if buffer.starts_with(query) {
-        let mut response_path = "home/pi/Rust/cross_bins/html/failure.html";
+        let mut response_path = "/home/pi/Rust/cross_bins/html/failure.html";
 
         // Attempt to parse the string
         match parse_data_request(&buffer) {
@@ -44,7 +44,7 @@ pub fn handle_connection(mut stream: TcpStream, str_arc: Arc<Mutex<Uart>>) {
                 // Try to send the data
                 if uart.write(good_line.as_bytes()).unwrap() > 0 {
                     println!("Success -> {}", &good_line);
-                    response_path = "home/pi/Rust/cross_bins/html/success.html";
+                    response_path = "/home/pi/Rust/cross_bins/html/success.html";
                 } else {
                     println!("Failed -> {}", &good_line);
                 }
@@ -56,7 +56,7 @@ pub fn handle_connection(mut stream: TcpStream, str_arc: Arc<Mutex<Uart>>) {
     } else {
         (
             "HTTP/1.1 404 NOT FOUND\r\n\r\n",
-            "home/pi/Rust/cross_bins/html/404.html",
+            "/home/pi/Rust/cross_bins/html/404.html",
         )
     };
 
