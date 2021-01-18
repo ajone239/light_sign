@@ -33,15 +33,20 @@ fn main() -> std::io::Result<()> {
         format!("{}:{}", "localhost", PORT)
     };
 
+    let listener = TcpListener::bind(&ip_str)?;
+    println!("Bound at -> http://{}", &ip_str);
+
     let mut uart = Uart::new(9600, Parity::None, 8, 1).unwrap();
     // Make the read blocking
     uart.set_write_mode(true).unwrap();
 
+    // Put the IP_STR on the sign
+    if uart.write(ip_str.as_bytes()).unwrap() > 0 {
+        println!("Success -> {}", &ip_str);
+    }
+
     // Wrap the UART so it can be used across threads
     let uart_ref = Arc::new(Mutex::new(uart));
-
-    let listener = TcpListener::bind(&ip_str)?;
-    println!("Bound at -> http://{}", &ip_str);
 
     // Get a thread pool to handle incoming connections
     let pool = ThreadPool::new(THREAD_COUNT);
